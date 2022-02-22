@@ -6,8 +6,16 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application android:name=".Bridge">
+        <receiver android:enabled="true"
+            android:name=".autostart">
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
         <service android:name=".PedometerService"
             android:enabled="true"
+            android:launchMode="singleTop"
             android:exported="true"/>
     </application>
 </manifest>

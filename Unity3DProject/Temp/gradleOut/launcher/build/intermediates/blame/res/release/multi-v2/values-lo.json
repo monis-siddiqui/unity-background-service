@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "/Users/monis/unity/unity-background-service/Unity3DProject/Temp/gradleOut/launcher/build/intermediates/incremental/mergeReleaseResources/merged.dir/values-lo/values-lo.xml",
+            "map": [
+                {
+                    "source": "/Users/monis/.gradle/caches/transforms-2/files-2.1/4362ba4f84c7853e6c3658d8c76d80fc/app-debug/res/values-lo/values-lo.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    }
+                }
+            ]
+        }
+    ]
+}

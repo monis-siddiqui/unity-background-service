@@ -1,0 +1,4 @@
+#Tue Feb 22 12:31:11 PKT 2022
+base.0=/Users/monis/unity/unity-background-service/Unity3DProject/Temp/gradleOut/launcher/build/intermediates/dex/release/mergeDexRelease/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

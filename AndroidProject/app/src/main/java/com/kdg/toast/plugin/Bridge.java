@@ -7,26 +7,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Debug;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Arrays;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import android.database.sqlite.SQLiteDatabase;
 
 import static androidx.core.app.ActivityCompat.requestPermissions;
 
 public final class Bridge extends Application {
     static int summarySteps;
     static int steps;
+    static int steps_last;
     static int initialSteps;
+    static int currentStep;
     static Activity myActivity;
     static Context appContext;
     Date currentDate;
@@ -34,6 +42,8 @@ public final class Bridge extends Application {
     static final String SUMMARY_STEPS="summarySteps";
     static final String DATE="currentDate";
     static final String INIT_DATE="initialDate";
+    public static String DB_PATH = "/data/data/com.kdg.toast.plugin/databases/";
+    public static String DB_NAME = "StepCounter";
 
     public static void receiveActivityInstance(Activity tempActivity) {
         myActivity = tempActivity;
@@ -93,8 +103,71 @@ public final class Bridge extends Application {
     public void onCreate() {
         super.onCreate();
         Bridge.appContext=getApplicationContext();
-
     }
+
+    public static int getStepCountData(String startDate, String endDate){
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-DD");
+        Log.i("PEDOMETER", "=====> Get Stepcount data from "+startDate +" " + endDate);
+        DatabaseHelper dbHelper = DatabaseHelper.getInstance(myActivity);
+        SQLiteDatabase stepCountDB = dbHelper.getReadableDatabase();
+        String sql ="Select * from StepCount WHERE recordedOn BETWEEN datetime('"+startDate+"') AND datetime('"+endDate+"')";
+        Log.i("PEDOMETER", "called stepcount data with query: "+sql);
+        Cursor c = stepCountDB.rawQuery(sql,null);
+        int steps=0;
+        if (c.moveToFirst()) {
+            do {
+                String column1 = c.getString(0);
+                String column2 = c.getString(1);
+                Log.i("PEDOMETER", "called stepcount data "+ Integer.parseInt(column1) +" "+column2);
+                steps+=Integer.parseInt(column1);
+            } while (c.moveToNext());
+        }
+        return steps;
+    }
+
+
+
+    public static int getStepCountData(String query){
+        Log.i("PEDOMETER", "called stepcount data with query: "+query);
+        DatabaseHelper dbHelper = DatabaseHelper.getInstance(myActivity);
+        SQLiteDatabase stepCountDB = dbHelper.getWritableDatabase();
+        Cursor c = stepCountDB.rawQuery(query,null);
+        int steps=0;
+        if (c.moveToFirst()) {
+            do {
+                String column1 = c.getString(0);
+                String column2 = c.getString(1);
+                Log.i("PEDOMETER", "called stepcount data "+ Integer.parseInt(column1) +" "+column2);
+                steps+=Integer.parseInt(column1);
+            } while (c.moveToNext());
+        }
+        Log.i("PEDOMETER", "called stepcount data "+steps+ "steps");
+        return steps;
+    }
+
+//    public static int getStepCountData(Long startDate, Long endDate){
+//        Log.i("PEDOMETER", "called stepcount data "+startDate +" " + endDate);
+//        DatabaseHelper dbHelper = DatabaseHelper.getInstance(myActivity);
+//        SQLiteDatabase stepCountDB = dbHelper.getWritableDatabase();
+//        String sql ="Select * from StepCount where recordedOn BETWEEN \''"+startDate+"\' and \'"+endDate+"\'";
+//        //String sql ="Select * from StepCount where recordedOn BETWEEN CURRENTTIMESTAMP";
+//        Cursor c = stepCountDB.rawQuery(sql,null);
+//        int steps=0;
+//        if (c.moveToFirst()) {
+//            do {
+//               // Log.i("PEDOMETER", "called stepcount data"+c.toString());
+//                // Passing values
+//                String column1 = c.getString(0);
+//                String column2 = c.getString(1);
+//                Log.i("PEDOMETER", "called stepcount data "+ Integer.parseInt(column1) +" "+column2);
+//                steps+=Integer.parseInt(column1);
+//                // Do something Here with values
+//            } while (c.moveToNext());
+//        }
+//        Log.i("PEDOMETER", "called stepcount data "+steps+ "steps");
+//        return steps;
+//    }
+
     public static void checkOptimization(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String packageName = myActivity.getPackageName();
